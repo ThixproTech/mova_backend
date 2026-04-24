@@ -73,7 +73,7 @@ db.once("open", async () => {
   await initializeSettings();
 
   const routes = require("./route");
-  app.use(routes);
+  app.use("/api", routes);
 
   app.get("/*", (req, res) => {
     res.status(200).sendFile(path.join(__dirname, "public", "index.html"));
