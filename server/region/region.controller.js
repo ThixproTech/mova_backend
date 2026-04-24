@@ -33,6 +33,7 @@ exports.getStore = async (req, res) => {
 //create region
 exports.store = async (req, res) => {
   try {
+    console.log(req.body,"nwfnje")
     if (!req.body.name) {
       return res.status(200).json({ status: false, message: "Oops ! Invalid details!" });
     }

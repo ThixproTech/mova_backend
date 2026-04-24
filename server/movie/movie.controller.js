@@ -41,26 +41,26 @@ const imageUrl = "https://www.themoviedb.org/t/p/original";
 //manual create movie by admin
 exports.store = async (req, res) => {
   try {
-    if (
-      !req.body.title ||
-      !req.body.year ||
-      !req.body.description ||
-      !req.body.region ||
-      !req.body.genre ||
-      !req.body.type ||
-      !req.body.runtime ||
-      !req.body.videoType ||
-      !req.body.trailerVideoType ||
-      !req.body.trailerType ||
-      !req.body.trailerName ||
-      !req.body.image ||
-      !req.body.thumbnail ||
-      !req.body.trailerImage ||
-      !req.body.link ||
-      !req.body.trailerVideoUrl
-    ) {
-      return res.status(200).json({ status: false, message: "Oops ! Invalid details!" });
-    }
+    // if (
+    //   !req.body.title ||
+    //   !req.body.year ||
+    //   !req.body.description ||
+    //   !req.body.region ||
+    //   !req.body.genre || 
+    //   !req.body.type ||
+    //   !req.body.runtime ||
+    //   !req.body.videoType ||
+    //   !req.body.trailerVideoType ||
+    //   !req.body.trailerType ||
+    //   !req.body.trailerName ||
+    //   !req.body.image ||
+    //   !req.body.thumbnail ||
+    //   !req.body.trailerImage ||
+    //   !req.body.link ||
+    //   !req.body.trailerVideoUrl
+    // ) {
+    //   return res.status(200).json({ status: false, message: "Oops ! Invalid details!" });
+    // }
 
     const [region, genre] = await Promise.all([Region.findById(req.body.region), Genre.findById(req.body.genre)]);
 
