@@ -326,9 +326,8 @@ exports.getStoredetails = async (req, res) => {
 
       //get trailer API (https://api.themoviedb.org/3/movie/595/videos?api_key=67af5e631dcbb4d0981b06996fcd47bc&language=en-US)
 
-      const trailerFetchUrl = `https://api.themoviedb.org/3/${req.query.type.toUpperCase() === "WEBSERIES" ? "tv" : "movie"}/${
-        req.query.type.toUpperCase() === "WEBSERIES" ? result.results[0].id : result.results[0].id
-      }/videos?language=en-US`;
+      const trailerFetchUrl = `https://api.themoviedb.org/3/${req.query.type.toUpperCase() === "WEBSERIES" ? "tv" : "movie"}/${req.query.type.toUpperCase() === "WEBSERIES" ? result.results[0].id : result.results[0].id
+        }/videos?language=en-US`;
 
       const trailerResult = await fetch(trailerFetchUrl, options).then((response) => response.json());
 
@@ -406,9 +405,8 @@ exports.getStoredetails = async (req, res) => {
 
       //get trailer API (https://api.themoviedb.org/3/movie/595/videos?api_key=67af5e631dcbb4d0981b06996fcd47bc&language=en-US)
 
-      const trailerFetchUrl = `https://api.themoviedb.org/3/${req.query.type.toUpperCase() === "WEBSERIES" ? "tv" : "movie"}/${
-        req.query.type.toUpperCase() === "WEBSERIES" ? result.tv_results[0].id : result.movie_results[0].id
-      }/videos?language=en-US`;
+      const trailerFetchUrl = `https://api.themoviedb.org/3/${req.query.type.toUpperCase() === "WEBSERIES" ? "tv" : "movie"}/${req.query.type.toUpperCase() === "WEBSERIES" ? result.tv_results[0].id : result.movie_results[0].id
+        }/videos?language=en-US`;
 
       const trailerResult = await fetch(trailerFetchUrl, options).then((response) => response.json());
 
@@ -503,17 +501,17 @@ exports.getSearchMovie = async (req, res) => {
     const url = `https://api.themoviedb.org/3/search/${type?.toUpperCase() === "WEBSERIES" ? "tv" : "movie"}?query=${title}&include_adult=false&language=en-US&page=1`;
 
     const response = await axios.get(`https://api.themoviedb.org/3/search/${type?.toUpperCase() === "WEBSERIES" ? "tv" : "movie"}`, {
-      headers : {
-       accept: "application/json",
-      Authorization: `Bearer ${process.env.Authorization}`,
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.Authorization}`,
       },
       timeout: 10000,
-      params : {
-        query : title
+      params: {
+        query: title
       }
     });
 
-    console.log('response-->' , response.ok);
+    console.log('response-->', response.ok);
     // if (!response.ok) {
     //   return res.status(200).json({
     //     status: false,
@@ -908,35 +906,67 @@ exports.update = async (req, res) => {
     const multipleGenre = req.body.genre ? req.body.genre.toString().split(",") : movie.genre;
     movie.genre = multipleGenre;
 
-    if (req.body.image) {
-      if (movie?.image) {
-        await deleteFromStorage(movie?.image);
+
+    // ========= Mova Premium Code ==========
+    // if (req.body.image) {
+    //   if (movie?.image) {
+    //     await deleteFromStorage(movie?.image);
+    //   }
+
+    //   // movie.updateType = Number(req.body.updateType); //always be 1
+    //   // movie.convertUpdateType.image = Number(req.body.convertUpdateType.image); //always be 1
+    //   movie.image = req.body.image ? req.body.image : movie.image;
+    // }
+
+    // if (req.body.thumbnail) {
+    //   if (movie?.thumbnail) {
+    //     await deleteFromStorage(movie?.thumbnail);
+    //   }
+
+    //   // movie.updateType = Number(req.body.updateType); //always be 1
+    //   // movie.convertUpdateType.thumbnail = Number(req.body.convertUpdateType.thumbnail); //always be 1
+    //   movie.thumbnail = req.body.thumbnail ? req.body.thumbnail : movie.thumbnail;
+    // }
+
+    // if (req.body.link) {
+    //   if (movie?.link) {
+    //     await deleteFromStorage(movie?.link);
+    //   }
+
+    //   // movie.updateType = Number(req.body.updateType); //always be 1
+    //   // movie.convertUpdateType.link = Number(req.body.convertUpdateType.link); //always be 1
+    //   movie.link = req.body.link ? req.body.link : movie.link;
+    // }
+    // ========= Mova Premium Code ==========
+
+
+    // ========= My Code ==========
+    if (req.body.image && req.body.image !== movie.image) {
+      if (movie.image) {
+        await deleteFromStorage(movie.image); // ✅ delete only old image
       }
 
-      // movie.updateType = Number(req.body.updateType); //always be 1
-      // movie.convertUpdateType.image = Number(req.body.convertUpdateType.image); //always be 1
-      movie.image = req.body.image ? req.body.image : movie.image;
+      movie.image = req.body.image; // ✅ set new image
     }
 
-    if (req.body.thumbnail) {
-      if (movie?.thumbnail) {
-        await deleteFromStorage(movie?.thumbnail);
+    if (req.body.thumbnail && req.body.thumbnail !== movie.thumbnail) {
+      if (movie.thumbnail) {
+        await deleteFromStorage(movie.thumbnail);
       }
 
-      // movie.updateType = Number(req.body.updateType); //always be 1
-      // movie.convertUpdateType.thumbnail = Number(req.body.convertUpdateType.thumbnail); //always be 1
-      movie.thumbnail = req.body.thumbnail ? req.body.thumbnail : movie.thumbnail;
+      movie.thumbnail = req.body.thumbnail;
     }
 
-    if (req.body.link) {
-      if (movie?.link) {
-        await deleteFromStorage(movie?.link);
+    if (req.body.link && req.body.link !== movie.link) {
+      if (movie.link) {
+        await deleteFromStorage(movie.link);
       }
 
-      // movie.updateType = Number(req.body.updateType); //always be 1
-      // movie.convertUpdateType.link = Number(req.body.convertUpdateType.link); //always be 1
-      movie.link = req.body.link ? req.body.link : movie.link;
+      movie.link = req.body.link;
     }
+
+    // ========= My Code ==========
+
 
     await movie.save();
 
@@ -2161,33 +2191,33 @@ exports.getMovieByGenre = async (req, res) => {
       },
       ...(userId
         ? [
-            {
-              $lookup: {
-                from: "favorites",
-                let: {
-                  movieId: "$_id",
-                  userId: new mongoose.Types.ObjectId(userId),
-                },
-                pipeline: [
-                  {
-                    $match: {
-                      $expr: {
-                        $and: [{ $eq: ["$movieId", "$$movieId"] }, { $eq: ["$userId", "$$userId"] }],
-                      },
+          {
+            $lookup: {
+              from: "favorites",
+              let: {
+                movieId: "$_id",
+                userId: new mongoose.Types.ObjectId(userId),
+              },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $and: [{ $eq: ["$movieId", "$$movieId"] }, { $eq: ["$userId", "$$userId"] }],
                     },
                   },
-                ],
-                as: "isFavorite",
-              },
+                },
+              ],
+              as: "isFavorite",
             },
-          ]
+          },
+        ]
         : [
-            {
-              $addFields: {
-                isFavorite: [],
-              },
+          {
+            $addFields: {
+              isFavorite: [],
             },
-          ]),
+          },
+        ]),
       {
         $lookup: {
           from: "ratings",
@@ -2333,33 +2363,33 @@ exports.fetchMovieData = async (req, res) => {
       },
       ...(userId
         ? [
-            {
-              $lookup: {
-                from: "favorites",
-                let: {
-                  movieId: "$_id",
-                  userId: new mongoose.Types.ObjectId(userId),
-                },
-                pipeline: [
-                  {
-                    $match: {
-                      $expr: {
-                        $and: [{ $eq: ["$movieId", "$$movieId"] }, { $eq: ["$userId", "$$userId"] }],
-                      },
+          {
+            $lookup: {
+              from: "favorites",
+              let: {
+                movieId: "$_id",
+                userId: new mongoose.Types.ObjectId(userId),
+              },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $and: [{ $eq: ["$movieId", "$$movieId"] }, { $eq: ["$userId", "$$userId"] }],
                     },
                   },
-                ],
-                as: "isFavorite",
-              },
+                },
+              ],
+              as: "isFavorite",
             },
-          ]
+          },
+        ]
         : [
-            {
-              $addFields: {
-                isFavorite: [],
-              },
+          {
+            $addFields: {
+              isFavorite: [],
             },
-          ]),
+          },
+        ]),
       {
         $lookup: {
           from: "ratings",

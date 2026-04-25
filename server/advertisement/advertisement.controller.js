@@ -3,7 +3,7 @@ const Advertisement = require("./advertisement.model");
 //create advertisement
 exports.store = async (req, res) => {
   try {
-    const advertisement = new Advertisement();
+    const advertisement = new Advertisement(req.body);
 
     await advertisement.save();
 
